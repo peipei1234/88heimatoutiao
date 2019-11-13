@@ -40,7 +40,13 @@ export default {
       // 定义一个 ref属性 通过this.$refs. 获取DOM对象
       this.$refs.formObj.validate((isOk) => {
         if (isOk) {
-
+          this.$axios({
+            method: 'POST',
+            url: '/authorizations',
+            data: this.loginForm
+          }).then(res => {
+            window.localStorage.setItem('user-token', res.data.data.token)
+          })
         }
       })
     }
