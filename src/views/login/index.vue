@@ -38,9 +38,11 @@ export default {
   methods: {
     login () {
       // 定义一个 ref属性 通过this.$refs. 获取DOM对象
-      this.$refs.formObj.validate(
+      this.$refs.formObj.validate((isOk) => {
+        if (isOk) {
 
-      )
+        }
+      })
     }
   },
   data () {
