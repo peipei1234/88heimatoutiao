@@ -1,6 +1,6 @@
 <template>
   <div>
-    首页
+    评论列表
   </div>
 </template>
 

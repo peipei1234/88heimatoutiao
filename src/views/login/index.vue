@@ -8,10 +8,20 @@
       </div>
       <!-- 表单 -->
       <!-- model 属性 -->
-      <el-form style="margin-top:20px" :model='loginForm' :rules='loginRules' ref="formObj">
+      <el-form
+        style="margin-top:20px"
+        :model='loginForm'
+        :rules='loginRules'
+        ref="formObj"
+        status-icon
+
+      >
         <el-form-item prop="mobile">
           <!-- 手机号输入框 -->
-          <el-input placeholder="请输入手机号" v-model='loginForm.mobile'></el-input>
+          <el-input
+            placeholder="请输入手机号"
+            v-model='loginForm.mobile'
+           ></el-input>
         </el-form-item>
         <el-form-item prop="code">
           <!-- 验证码输入框 -->
@@ -25,7 +35,11 @@
         </el-form-item>
         <el-form-item>
           <!-- 登录按钮 -->
-           <el-button type="primary" style='width:100%;' @click="login">登录</el-button>
+          <el-button
+            type="primary"
+            style='width:100%;'
+            @click="login"
+          >登录</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -64,7 +78,7 @@ export default {
       loginForm: {
         mobile: '', // 手机号
         code: '', // 验证码
-        checked: false // 是否勾选
+        checked: true // 是否勾选
       },
       // 校验规则
       loginRules: {

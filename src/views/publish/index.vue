@@ -1,6 +1,6 @@
 <template>
   <div>
-    首页
+    发布文章
   </div>
 </template>
 
