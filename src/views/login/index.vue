@@ -60,7 +60,7 @@ export default {
             data: this.loginForm
           }).then(res => {
             window.localStorage.setItem('user-token', res.data.data.token)
-            this.$router.push('/home')
+            this.$router.push('/')
           }).catch(() => {
             this.$message({
               message: '手机号或验证码输入错误',

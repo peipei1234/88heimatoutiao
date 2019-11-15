@@ -7,17 +7,18 @@ import Home from '../views/home'
 import Article from '../views/article'
 import Publish from '../views/publish'
 import Comment from '../views/comment'
+import NProgress from 'nprogress'
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/',
-    redirect: '/layout'
+  // {
+  //   path: '/',
+  //   redirect: '/layout'
 
-  },
+  // },
   {
     // 一级路由
-    path: '/layout',
+    path: '/',
     name: 'layout',
     component: Layout,
     children: [
@@ -62,23 +63,31 @@ const routes = [
 const router = new VueRouter({
   routes
 })
-// 路由拦截    所有页面
+// 路由拦截  router.beforeEach（）   所有页面
 // to 去哪里的路由信息
 // from 来自哪里
 //  next  是个方法 用来路由的放行
 router.beforeEach((to, from, next) => {
+  // 开启进度条
+  NProgress.start()
+  // 判断要去的是不是登录页
   if (to.path === '/login') {
-    next()
+    return next()
     // 停止代码往后执行
-    return
   }
-  // 判断   获取用户token 是否有
+  //  获取用户token 是否有
   const token = window.localStorage.getItem('user-token')
   if (token) {
+    // 如果有token 放行
     next()
   } else {
-    // 跳转到指定页面
+    //  如果没有 跳转到指定页面
     next('/login')
   }
+})
+
+router.afterEach((to, from) => {
+  // 关闭进度条
+  NProgress.done()
 })
 export default router
