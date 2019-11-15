@@ -51,14 +51,28 @@ export default {
         // 跳转到git地址
         window.location.href = 'https://github.com/peipei1234/88heimatoutiao'
       } else if (key === 'loginout') {
-        // 清除当前前端页面所有缓存
-        window.localStorage.clear()
-        // 跳转到登录页
-        this.$router.push('/login')
+        this.$confirm('是否要退出?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '退出成功!'
+          })
+          window.localStorage.removeItem('user-token')
+          this.$router.push('/login')
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消退出'
+          })
+        })
       }
     }
   }
 }
+
 </script>
 
 <style scoped lang="less">
