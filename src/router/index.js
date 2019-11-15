@@ -83,6 +83,8 @@ router.beforeEach((to, from, next) => {
   } else {
     //  如果没有 跳转到指定页面
     next('/login')
+    // 如果在登录页并且是非登录状态 没有进度条
+    NProgress.done()
   }
 })
 
