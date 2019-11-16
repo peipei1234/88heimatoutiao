@@ -75,8 +75,10 @@
           <el-table-column
             prop="address"
             label="操作">
+            <template slot-scope="scope">
             <el-button type="primary" size='mini'>编辑</el-button>
-            <el-button type="info" size='mini'>删除</el-button>
+            <el-button type="info" size='mini' @click="onDel(scope.row.id)">删除</el-button>
+            </template>
           </el-table-column>
       </el-table>
       <!-- 分页 -->
@@ -85,6 +87,7 @@
         background
         layout="prev, pager, next"
         :page-count="+total_count"
+        @current-change='onPageChange'
         >
       </el-pagination>
       </div>
@@ -112,43 +115,62 @@ export default {
       articleStatus: [
         {
           type: '',
-          status: 0,
+
           label: '草稿'
         },
         {
           type: 'warning',
-          status: 1,
+
           label: '待审核'
         },
         {
           type: 'success',
-          status: 2,
+
           label: '审核通过'
         },
         {
           type: 'warning',
-          status: 3,
+
           label: '审核失败'
         },
         {
           type: 'warning',
-          status: 4,
+
           label: '已删除'
         }
       ]
     }
   },
   created () {
-    this.loadArticle()
+    this.loadArticle(1)
   },
   methods: {
-    loadArticle () {
+    onDel (index) {
+      console.log('delete')
+      console.log(index)
+      const token = window.localStorage.getItem('user-token')
+      this.$axios({
+        method: 'DELETE',
+        url: `/articles/:${index}`,
+        // params: index,
+        headers: {
+          ContentType: 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+      this.loadArticle()
+    },
+    loadArticle (page) {
       const token = window.localStorage.getItem('user-token')
       this.$axios({
         method: 'GET',
         url: '/articles',
         headers: {
           Authorization: `Bearer ${token}`
+        },
+        params: {
+          page
+          // per_page: 2
         }
       }).then(res => {
         // res.data.data.page = this.currentPage
@@ -159,6 +181,9 @@ export default {
       }).catch(err => {
         console.log(err, '没有找到')
       })
+    },
+    onPageChange (page) {
+      this.loadArticle(page)
     }
   }
 }
