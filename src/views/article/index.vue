@@ -9,29 +9,40 @@
         <!-- 文章状态 -->
         <el-form-item label="文章状态">
           <el-radio-group v-model="filterForm.status">
-            <el-radio label="全部"></el-radio>
-            <el-radio label="草稿"></el-radio>
-            <el-radio label="待审核"></el-radio>
-            <el-radio label="审核通过"></el-radio>
-            <el-radio label="审核失败"></el-radio>
+            <el-radio  :label="null">全部</el-radio>
+            <el-radio  label="0">草稿</el-radio>
+            <el-radio  label="1">待审核</el-radio>
+            <el-radio  label="2">审核通过</el-radio>
+            <el-radio  label="3">审核失败</el-radio>
+            <el-radio  label="4">已删除</el-radio>
           </el-radio-group>
         </el-form-item>
         <!-- 频道列表 -->
         <el-form-item label="频道列表">
           <el-select  placeholder="请选择频道" v-model="filterForm.channel_id">
-            <el-option label="开发者资讯" value="shanghai"></el-option>
-            <el-option label="数据库" value="beijing"></el-option>
+            <el-option
+              :label="channel.name"
+              :value="channel.id"
+              v-for="channel in channels"
+              :key="channel.id"
+              ></el-option>
           </el-select>
         </el-form-item>
         <!-- 时间选择 -->
         <span>时间选择：</span>
-        <el-date-picker
-        type="datetimerange"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期">
-      </el-date-picker>
-      </el-form>
+          <el-date-picker
+            v-model="rangeDate"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd">
+    </el-date-picker>
+    <el-form-item>
+     <el-button type="primary" @click="loadArticle(1)">查询</el-button>
+    </el-form-item>
+    </el-form>
+
     </el-card>
 <!-- 文章列表 -->
    <el-card class="box-card">
@@ -40,6 +51,7 @@
       </div>
       <!-- 列表内容 -->
         <el-table
+
           :data="articels"
           style="width: 100%">
           <el-table-column
@@ -86,7 +98,7 @@
         <el-pagination
         background
         layout="prev, pager, next"
-        :page-count="+total_count"
+        :total='total_count'
         @current-change='onPageChange'
         >
       </el-pagination>
@@ -102,14 +114,15 @@ export default {
   name: 'articel',
   data () {
     return {
-
+      rangeDate: [],
+      page: 0,
       filterForm: {
-        status: '',
-        channel_id: '',
+        status: null,
         begin_pubdate: '',
-        end_pubdate: ''
-
+        end_pubdate: '',
+        channel_id: null
       },
+      channels: [],
       total_count: '',
       articels: [],
       articleStatus: [
@@ -142,7 +155,8 @@ export default {
     }
   },
   created () {
-    this.loadArticle(1)
+    this.loadArticle()
+    this.loadChannels()
   },
   methods: {
     onDel (index) {
@@ -151,16 +165,21 @@ export default {
       const token = window.localStorage.getItem('user-token')
       this.$axios({
         method: 'DELETE',
-        url: `/articles/:${index}`,
+        url: `/articles/${index}`,
         // params: index,
         headers: {
-          ContentType: 'application/json',
+          // 不需要传递
+          // ContentType: 'application/json',
           Authorization: `Bearer ${token}`
         }
+      }).then((res) => {
+        console.log('删除成功')
+        this.loadArticle()
+      }).catch(err => {
+        console.log(err, '删除失败')
       })
-      this.loadArticle()
     },
-    loadArticle (page) {
+    loadArticle (page = 1) {
       const token = window.localStorage.getItem('user-token')
       this.$axios({
         method: 'GET',
@@ -169,8 +188,13 @@ export default {
           Authorization: `Bearer ${token}`
         },
         params: {
-          page
-          // per_page: 2
+          page, // 页码
+          per_page: 10,
+          status: this.filterForm.status, // 文章状态
+          // channel_id: '',
+          begin_pubdate: this.rangeDate ? this.rangeDate[0] : null,
+          end_pubdate: this.rangeDate ? this.rangeDate[1] : null
+          //
         }
       }).then(res => {
         // res.data.data.page = this.currentPage
@@ -183,7 +207,19 @@ export default {
       })
     },
     onPageChange (page) {
+      // 记录当前页的页码
+      this.page = page
       this.loadArticle(page)
+    },
+    loadChannels () {
+      this.$axios({
+        method: 'GET',
+        url: '/channels'
+      }).then(res => {
+        this.channels = res.data.data.channels
+      }).catch(err => {
+        console.log(err, '获取数据失败')
+      })
     }
   }
 }
