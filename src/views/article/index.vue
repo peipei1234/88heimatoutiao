@@ -51,7 +51,7 @@
       </div>
       <!-- 列表内容 -->
         <el-table
-
+          v-loading="loading"
           :data="articels"
           style="width: 100%">
           <el-table-column
@@ -109,11 +109,11 @@
 </template>
 
 <script>
-
 export default {
   name: 'articel',
   data () {
     return {
+      loading: false,
       rangeDate: [],
       page: 0,
       filterForm: {
@@ -162,7 +162,7 @@ export default {
     onDel (index) {
       console.log('delete')
       console.log(index)
-      const token = window.localStorage.getItem('user-token')
+      // const token = window.localStorage.getItem('user-token')
       this.$axios({
         method: 'DELETE',
         url: `/articles/${index}`,
@@ -170,7 +170,7 @@ export default {
         headers: {
           // 不需要传递
           // ContentType: 'application/json',
-          Authorization: `Bearer ${token}`
+          // Authorization: `Bearer ${token}`
         }
       }).then((res) => {
         console.log('删除成功')
@@ -180,12 +180,13 @@ export default {
       })
     },
     loadArticle (page = 1) {
-      const token = window.localStorage.getItem('user-token')
+      // const token = window.localStorage.getItem('user-token')
+      this.loading = true
       this.$axios({
         method: 'GET',
         url: '/articles',
         headers: {
-          Authorization: `Bearer ${token}`
+          // Authorization: `Bearer ${token}`
         },
         params: {
           page, // 页码
@@ -204,6 +205,8 @@ export default {
         console.log(res.data)
       }).catch(err => {
         console.log(err, '没有找到')
+      }).finally(() => {
+        this.loading = false
       })
     },
     onPageChange (page) {
